@@ -1,15 +1,23 @@
 package main
 
-import "fmt"
-
-//import "reflect"
-import "net/http"
-import "io/ioutil"
-
-import "os"
+import (
+	//"compress/gzip"
+	"fmt"
+	"io/ioutil"
+	"net/http"
+	"os"
+	"reflect"
+	//"strconv"
+)
 
 func main() {
-	resp, err := http.Get("https://api.github.com/users/cdale77/repos")
+	getData()
+}
+
+func getData() {
+	url := "http://data.githubarchive.org/2015-01-01-12.json.gz"
+
+	resp, err := http.Get(url)
 
 	if err != nil {
 		fmt.Println("%s", err)
@@ -23,7 +31,9 @@ func main() {
 			os.Exit(1)
 		}
 
-		fmt.Println("%s\n", string(contents))
+		ioutil.WriteFile("dat1.gz", contents, 0644)
 
+		fmt.Println("completed")
+		fmt.Println(reflect.TypeOf(contents))
 	}
 }
