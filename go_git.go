@@ -2,12 +2,13 @@ package main
 
 import (
 	//"compress/gzip"
+	"bytes"
 	"fmt"
 	"io/ioutil"
 	"net/http"
 	"os"
 	//"reflect"
-	"bytes"
+	"strings"
 	"time"
 	//"strconv"
 )
@@ -16,46 +17,52 @@ func main() {
 	getData()
 }
 
-func getData() {
-	year := time.Now().AddDate(0, 0, -1).Format("2006")
-	date := time.Now().AddDate(0, 0, -1).Format("01-02")
-	fmt.Println(year)
-	fmt.Println(date)
+func makeUrl(fullDate string) string {
+
+	split := strings.Split(fullDate, "-")
 
 	var buffer bytes.Buffer
+
 	buffer.WriteString("http://data.githubarchive.org/")
-	buffer.WriteString(year)
+	buffer.WriteString(split[0]) //year
 	buffer.WriteString("-01-")
-	buffer.WriteString(date)
+	buffer.WriteString(split[1]) //month
+	buffer.WriteString("-")
+	buffer.WriteString(split[2]) //day
 	buffer.WriteString(".json.gz")
 
-	url := buffer.String()
-	fmt.Println(url)
+	return buffer.String()
+}
 
-	resp, err := http.Get(url)
+func handleError(message string, err error) {
+	fmt.Println("Error getting github archive:", err)
+	os.Exit(1)
+}
+
+func getData() {
+
+	fullDate := time.Now().AddDate(0, 0, -1).Format("2006-01-02")
+
+	url := makeUrl(fullDate)
+	resp, archiveErr := http.Get(url)
 	defer resp.Body.Close()
 
-	if err != nil {
-		fmt.Println("Error getting github archive:", err)
-		os.Exit(1)
-	} else {
-
-		contents, err := ioutil.ReadAll(resp.Body)
-
-		if err != nil {
-			fmt.Println("Error writing response to file", err)
-			os.Exit(1)
-		}
-
-		var buffer bytes.Buffer
-		buffer.WriteString("data-")
-		buffer.WriteString(year)
-		buffer.WriteString("-")
-		buffer.WriteString(date)
-		buffer.WriteString(".gz")
-
-		fname := buffer.String()
-
-		ioutil.WriteFile(fname, contents, 0644)
+	if archiveErr != nil {
+		handleError("Error getting github archive:", archiveErr)
 	}
+
+	contents, readErr := ioutil.ReadAll(resp.Body)
+
+	if readErr != nil {
+		handleError("Error writing response to file", readErr)
+	}
+
+	var buffer bytes.Buffer
+	buffer.WriteString("data-")
+	buffer.WriteString(fullDate)
+	buffer.WriteString(".gz")
+
+	fname := buffer.String()
+
+	ioutil.WriteFile(fname, contents, 0644)
 }
