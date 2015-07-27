@@ -4,10 +4,11 @@ import (
 	//"compress/gzip"
 	"bytes"
 	"fmt"
-	"io/ioutil"
+	//"io/ioutil"
 	"net/http"
 	"os"
 	//"reflect"
+	"net/url"
 	"strings"
 	"time"
 	//"strconv"
@@ -21,24 +22,55 @@ func main() {
 
 func getData(fullDate string) {
 
-	url := makeUrl(fullDate)
-	fmt.Println(url)
-	resp, archiveErr := http.Get(url)
-	defer resp.Body.Close()
+	urlString := makeUrl(fullDate)
 
-	if archiveErr != nil {
-		handleError("Error getting github archive:", archiveErr)
+	fmt.Println(urlString)
+	/*
+		resp, archiveErr := http.Get(urlString)
+		defer resp.Body.Close()
+	*/
+
+	req := &http.Request{
+		Method: "GET",
+		Host:   "data.githubarchive.org",
+		URL: &url.URL{
+			Host:   "ignored",
+			Scheme: "http",
+			Opaque: urlString,
+		},
+		Header: http.Header{
+			"User-Agent": {"golang"},
+		},
+	}
+	client := http.Client{}
+
+	resp, err := client.Do(req)
+
+	if err != nil {
+		fmt.Println("whoops")
+		fmt.Println(err)
 	}
 
-	contents, readErr := ioutil.ReadAll(resp.Body)
-
-	if readErr != nil {
-		handleError("Error writing response to file", readErr)
+	if resp != nil {
+		fmt.Println(resp)
 	}
 
-	fname := makeFileName(fullDate)
+	/*
+			if archiveErr != nil {
+				handleError("Error getting github archive:", archiveErr)
+			}
 
-	ioutil.WriteFile(fname, contents, 0644)
+
+		contents, readErr := ioutil.ReadAll(resp.Body)
+
+		if readErr != nil {
+			handleError("Error writing response to file", readErr)
+		}
+
+		fname := makeFileName(fullDate)
+
+		ioutil.WriteFile(fname, contents, 0644)
+	*/
 }
 
 func makeUrl(fullDate string) string {
@@ -46,7 +78,7 @@ func makeUrl(fullDate string) string {
 
 	var buffer bytes.Buffer
 
-	buffer.WriteString("http://data.githubarchive.org/")
+	buffer.WriteString("//data.githubarchive.org/")
 	buffer.WriteString(split[0]) //year
 	buffer.WriteString("-")
 	buffer.WriteString(split[1]) //month
