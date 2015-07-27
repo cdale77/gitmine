@@ -14,13 +14,15 @@ import (
 )
 
 func main() {
-	getData()
+
+	fullDate := time.Now().AddDate(0, 0, -1).Format("2006-01-02")
+	getData(fullDate)
 }
 
-func getData() {
-	fullDate := time.Now().AddDate(0, 0, -1).Format("2006-01-02")
+func getData(fullDate string) {
 
 	url := makeUrl(fullDate)
+	fmt.Println(url)
 	resp, archiveErr := http.Get(url)
 	defer resp.Body.Close()
 
@@ -46,10 +48,11 @@ func makeUrl(fullDate string) string {
 
 	buffer.WriteString("http://data.githubarchive.org/")
 	buffer.WriteString(split[0]) //year
-	buffer.WriteString("-01-")
+	buffer.WriteString("-")
 	buffer.WriteString(split[1]) //month
 	buffer.WriteString("-")
-	buffer.WriteString(split[2]) //day
+	buffer.WriteString(split[2])   //day
+	buffer.WriteString("-{0..23}") //hours
 	buffer.WriteString(".json.gz")
 
 	return buffer.String()
