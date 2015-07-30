@@ -8,7 +8,8 @@ import (
 	"net/http"
 	"os"
 	//"reflect"
-	"net/url"
+	//"net/url"
+	"strconv"
 	"strings"
 	"time"
 	//"strconv"
@@ -22,45 +23,24 @@ func main() {
 
 func getData(fullDate string) {
 
-	urlString := makeUrl(fullDate)
+	urls := makeUrlArray(fullDate)
+	fmt.Println(urls)
 
-	fmt.Println(urlString)
-	/*
-		resp, archiveErr := http.Get(urlString)
-		defer resp.Body.Close()
-	*/
+	for _, value := range urls {
+		fmt.Println("getting url", value)
+		resp, archiveErr := http.Get(value)
 
-	req := &http.Request{
-		Method: "GET",
-		Host:   "data.githubarchive.org",
-		URL: &url.URL{
-			Host:   "ignored",
-			Scheme: "http",
-			Opaque: urlString,
-		},
-		Header: http.Header{
-			"User-Agent": {"golang"},
-		},
-	}
-	client := http.Client{}
+		if resp != nil {
+			defer resp.Body.Close()
+		}
 
-	resp, err := client.Do(req)
+		if archiveErr != nil {
+			handleError("Error getting github archive:", archiveErr)
+		}
 
-	if err != nil {
-		fmt.Println("whoops")
-		fmt.Println(err)
-	}
-
-	if resp != nil {
-		fmt.Println(resp)
 	}
 
 	/*
-			if archiveErr != nil {
-				handleError("Error getting github archive:", archiveErr)
-			}
-
-
 		contents, readErr := ioutil.ReadAll(resp.Body)
 
 		if readErr != nil {
@@ -73,19 +53,38 @@ func getData(fullDate string) {
 	*/
 }
 
-func makeUrl(fullDate string) string {
+func makeUrlArray(fullDate string) [24]string {
+
+	baseUrl := makeUrlBase(fullDate)
+	urlEnd := ".json.gz"
+
+	var urls [24]string
+
+	for i := 0; i < 24; i++ {
+
+		var buffer bytes.Buffer
+		buffer.WriteString(baseUrl)
+		buffer.WriteString("-")
+		buffer.WriteString(strconv.Itoa(i))
+		buffer.WriteString(urlEnd)
+		url := buffer.String()
+
+		urls[i] = url
+	}
+
+	return urls
+}
+
+func makeUrlBase(fullDate string) string {
 	split := strings.Split(fullDate, "-")
 
 	var buffer bytes.Buffer
-
-	buffer.WriteString("//data.githubarchive.org/")
+	buffer.WriteString("http//data.githubarchive.org/")
 	buffer.WriteString(split[0]) //year
 	buffer.WriteString("-")
 	buffer.WriteString(split[1]) //month
 	buffer.WriteString("-")
-	buffer.WriteString(split[2])   //day
-	buffer.WriteString("-{0..23}") //hours
-	buffer.WriteString(".json.gz")
+	buffer.WriteString(split[2]) //day
 
 	return buffer.String()
 }
