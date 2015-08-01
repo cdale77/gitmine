@@ -79,7 +79,7 @@ func makeUrlBase(fullDate string) string {
 	split := strings.Split(fullDate, "-")
 
 	var buffer bytes.Buffer
-	buffer.WriteString("http//data.githubarchive.org/")
+	buffer.WriteString("http://data.githubarchive.org/")
 	buffer.WriteString(split[0]) //year
 	buffer.WriteString("-")
 	buffer.WriteString(split[1]) //month
