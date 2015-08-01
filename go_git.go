@@ -4,7 +4,7 @@ import (
 	//"compress/gzip"
 	"bytes"
 	"fmt"
-	//"io/ioutil"
+	"io/ioutil"
 	"net/http"
 	"os"
 	//"reflect"
@@ -26,8 +26,8 @@ func getData(fullDate string) {
 	urls := makeUrlArray(fullDate)
 	fmt.Println(urls)
 
-	for _, value := range urls {
-		fmt.Println("getting url", value)
+	for i, value := range urls {
+
 		resp, archiveErr := http.Get(value)
 
 		if resp != nil {
@@ -38,19 +38,22 @@ func getData(fullDate string) {
 			handleError("Error getting github archive:", archiveErr)
 		}
 
-	}
-
-	/*
 		contents, readErr := ioutil.ReadAll(resp.Body)
 
 		if readErr != nil {
 			handleError("Error writing response to file", readErr)
 		}
 
-		fname := makeFileName(fullDate)
+		fname := makeFileName(fullDate, i)
 
-		ioutil.WriteFile(fname, contents, 0644)
-	*/
+		fileError := ioutil.WriteFile(fname, contents, 0644)
+
+		if fileError != nil {
+			fmt.Println("File error", fileError)
+		}
+
+	}
+
 }
 
 func makeUrlArray(fullDate string) [24]string {
@@ -89,13 +92,16 @@ func makeUrlBase(fullDate string) string {
 	return buffer.String()
 }
 
-func makeFileName(fullDate string) string {
+func makeFileName(fullDate string, i int) string {
 	var buffer bytes.Buffer
 	buffer.WriteString("data-")
 	buffer.WriteString(fullDate)
+	buffer.WriteString("-")
+	buffer.WriteString(strconv.Itoa(i))
 	buffer.WriteString(".gz")
 
 	return buffer.String()
+
 }
 
 func handleError(message string, err error) {
