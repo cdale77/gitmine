@@ -35,13 +35,13 @@ func getData(fullDate string) {
 		}
 
 		if archiveErr != nil {
-			handleError("Error getting github archive:", archiveErr)
+			handleError("Error getting github archive", archiveErr)
 		}
 
 		contents, readErr := ioutil.ReadAll(resp.Body)
 
 		if readErr != nil {
-			handleError("Error writing response to file", readErr)
+			handleError("Error converting response", readErr)
 		}
 
 		fname := makeFileName(fullDate, i)
@@ -49,11 +49,9 @@ func getData(fullDate string) {
 		fileError := ioutil.WriteFile(fname, contents, 0644)
 
 		if fileError != nil {
-			fmt.Println("File error", fileError)
+			handleError("Error writing response to file", fileErr)
 		}
-
 	}
-
 }
 
 func makeUrlArray(fullDate string) [24]string {
@@ -105,6 +103,6 @@ func makeFileName(fullDate string, i int) string {
 }
 
 func handleError(message string, err error) {
-	fmt.Println("Error getting github archive:", err)
+	fmt.Println(message, err)
 	os.Exit(1)
 }
