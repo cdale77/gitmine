@@ -1,18 +1,14 @@
 package main
 
 import (
-	//"compress/gzip"
 	"bytes"
 	"fmt"
 	"io/ioutil"
 	"net/http"
 	"os"
-	//"reflect"
-	//"net/url"
 	"strconv"
 	"strings"
 	"time"
-	//"strconv"
 )
 
 func main() {
@@ -24,9 +20,10 @@ func main() {
 func getData(fullDate string) {
 
 	urls := makeUrlArray(fullDate)
-	fmt.Println(urls)
 
 	for i, value := range urls {
+
+		fmt.Println("fetching url", value)
 
 		resp, archiveErr := http.Get(value)
 
@@ -46,9 +43,9 @@ func getData(fullDate string) {
 
 		fname := makeFileName(fullDate, i)
 
-		fileError := ioutil.WriteFile(fname, contents, 0644)
+		fileErr := ioutil.WriteFile(fname, contents, 0644)
 
-		if fileError != nil {
+		if fileErr != nil {
 			handleError("Error writing response to file", fileErr)
 		}
 	}
