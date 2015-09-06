@@ -2,6 +2,7 @@ package main
 
 import (
 	"bytes"
+	"compress/gzip"
 	"fmt"
 	"io/ioutil"
 	"net/http"
@@ -15,6 +16,28 @@ func main() {
 
 	fullDate := time.Now().AddDate(0, 0, -1).Format("2006-01-02")
 	getData(fullDate)
+	//unpackFile("data-2015-09-04-10.gz")
+}
+
+func unpackFile(filename string) {
+	fi, err := os.Open(filename)
+	if err != nil {
+		handleError("Error opening file", err)
+	}
+	defer fi.Close()
+
+	fz, err := gzip.NewReader(fi)
+	if err != nil {
+		handleError("gunzipping the file", err)
+	}
+	defer fz.Close()
+
+	s, err := ioutil.ReadAll(fz)
+	if err != nil {
+		handleError("error reading gunzip stream", err)
+	}
+
+	//fmt.Println(s)
 }
 
 func getData(fullDate string) {
