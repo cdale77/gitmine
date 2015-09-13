@@ -1,24 +1,22 @@
 package main
 
 import (
+	"bufio"
 	"bytes"
 	"compress/gzip"
 	"fmt"
 	"io/ioutil"
 	"net/http"
 	"os"
-	//"reflect"
-	"bufio"
 	"strconv"
 	"strings"
-	//"time"
 )
 
 func main() {
 
-	//fullDate := time.Now().AddDate(0, 0, -1).Format("2006-01-02")
-	//getData(fullDate)
-	parseFile("data-2015-09-12-0.gz")
+	fullDate := time.Now().AddDate(0, 0, -1).Format("2006-01-02")
+	getData(fullDate)
+	//parseFile("data-2015-09-12-0.gz")
 }
 
 func parseFile(fName string) {
