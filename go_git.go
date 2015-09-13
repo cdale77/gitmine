@@ -40,7 +40,9 @@ func parseFile(fName string) {
 		if err != nil {
 			break
 		}
+		fmt.Println("**")
 		fmt.Printf("Line %v: %s", i, line)
+		fmt.Println("**")
 		i++
 	}
 }
