@@ -7,37 +7,44 @@ import (
 	"io/ioutil"
 	"net/http"
 	"os"
+	//"reflect"
+	"bufio"
 	"strconv"
 	"strings"
-	"time"
+	//"time"
 )
 
 func main() {
 
-	fullDate := time.Now().AddDate(0, 0, -1).Format("2006-01-02")
-	getData(fullDate)
-	//unpackFile("data-2015-09-04-10.gz")
+	//fullDate := time.Now().AddDate(0, 0, -1).Format("2006-01-02")
+	//getData(fullDate)
+	parseFile("data-2015-09-12-0.gz")
 }
 
-func unpackFile(filename string) {
-	fi, err := os.Open(filename)
+func parseFile(fName string) {
+	// https://groups.google.com/forum/#!topic/golang-nuts/GjIkryuCyAY
+	fileOS, err := os.Open(fName)
 	if err != nil {
-		handleError("Error opening file", err)
-	}
-	defer fi.Close()
-
-	fz, err := gzip.NewReader(fi)
-	if err != nil {
-		handleError("gunzipping the file", err)
-	}
-	defer fz.Close()
-
-	s, err := ioutil.ReadAll(fz)
-	if err != nil {
-		handleError("error reading gunzip stream", err)
+		fmt.Fprintf(os.Stderr, "rollupParse: Can't open %s: error: %s\n", fName, err)
+		os.Exit(1)
 	}
 
-	//fmt.Println(s)
+	fileGzip, err := gzip.NewReader(fileOS)
+	if err != nil {
+		fmt.Printf("The file %v is not in gzip format.\n", fName)
+		os.Exit(1)
+	}
+
+	fileRead := bufio.NewReader(fileGzip)
+	i := 0
+	for {
+		line, err := fileRead.ReadString('\n')
+		if err != nil {
+			break
+		}
+		fmt.Printf("Line %v: %s", i, line)
+		i++
+	}
 }
 
 func getData(fullDate string) {
@@ -81,7 +88,7 @@ func makeUrlArray(fullDate string) [24]string {
 
 	var urls [24]string
 
-	for i := 0; i < 24; i++ {
+	for i := 0; i < 6; i++ {
 
 		var buffer bytes.Buffer
 		buffer.WriteString(baseUrl)
