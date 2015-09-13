@@ -10,13 +10,13 @@ import (
 	"os"
 	"strconv"
 	"strings"
+	"time"
 )
 
 func main() {
 
 	fullDate := time.Now().AddDate(0, 0, -1).Format("2006-01-02")
 	getData(fullDate)
-	//parseFile("data-2015-09-12-0.gz")
 }
 
 func parseFile(fName string) {
@@ -76,6 +76,9 @@ func getData(fullDate string) {
 		if fileErr != nil {
 			handleError("Error writing response to file", fileErr)
 		}
+
+		parseFile(fname)
+
 	}
 }
 
