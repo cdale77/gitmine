@@ -91,7 +91,7 @@ func makeUrlArray(fullDate string) [24]string {
 
 	var urls [24]string
 
-	for i := 0; i < 6; i++ {
+	for i := 0; i < 24; i++ {
 
 		var buffer bytes.Buffer
 		buffer.WriteString(baseUrl)
