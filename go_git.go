@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"bytes"
 	"compress/gzip"
+	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"net/http"
@@ -12,6 +13,21 @@ import (
 	"strings"
 	"time"
 )
+
+type CommitCommit struct {
+	Message string
+}
+
+type CommitPayload struct {
+	Size    int
+	Commits []CommitCommit
+}
+
+type Commit struct {
+	Id      string
+	Type    string
+	Payload CommitPayload
+}
 
 func main() {
 
@@ -38,11 +54,26 @@ func parseFile(fName string) {
 	for {
 		line, err := fileRead.ReadString('\n')
 		if err != nil {
+			fmt.Println("Did not get a new line.")
 			break
 		}
-		fmt.Println("**")
-		fmt.Printf("Line %v: %s", i, line)
-		fmt.Println("**")
+
+		var commit Commit
+
+		jsonErr := json.Unmarshal([]byte(line), &commit)
+		if jsonErr != nil {
+			fmt.Println("Could not parse json.")
+			fmt.Println(jsonErr)
+		} else {
+			if commit.Type == "PushEvent" {
+				fmt.Println("Found a PushEvent commit")
+				if commit.Payload.Size > 0 {
+					fmt.Println(commit.Payload.Commits[0])
+
+				}
+			}
+		}
+
 		i++
 	}
 }
