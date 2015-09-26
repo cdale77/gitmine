@@ -35,11 +35,26 @@ func main() {
 	getData(fullDate)
 }
 
+func parseCommit(line string) {
+	var commit Commit
+
+	jsonErr := json.Unmarshal([]byte(line), &commit)
+	if jsonErr != nil {
+		fmt.Println("Could not parse json.")
+		fmt.Println(jsonErr)
+	}
+
+	if commit.Type == "PushEvent" && commit.Payload.Size > 0 {
+		fmt.Println(commit.Payload.Commits[0].Message)
+	}
+
+}
+
 func parseFile(fName string) {
 	// https://groups.google.com/forum/#!topic/golang-nuts/GjIkryuCyAY
 	fileOS, err := os.Open(fName)
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "rollupParse: Can't open %s: error: %s\n", fName, err)
+		fmt.Fprintf(os.Stderr, "Can't open %s: error: %s\n", fName, err)
 		os.Exit(1)
 	}
 
@@ -58,21 +73,7 @@ func parseFile(fName string) {
 			break
 		}
 
-		var commit Commit
-
-		jsonErr := json.Unmarshal([]byte(line), &commit)
-		if jsonErr != nil {
-			fmt.Println("Could not parse json.")
-			fmt.Println(jsonErr)
-		} else {
-			if commit.Type == "PushEvent" {
-				fmt.Println("Found a PushEvent commit")
-				if commit.Payload.Size > 0 {
-					fmt.Println(commit.Payload.Commits[0])
-
-				}
-			}
-		}
+		parseCommit(line)
 
 		i++
 	}
