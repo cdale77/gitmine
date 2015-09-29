@@ -35,6 +35,7 @@ func main() {
 	getData(fullDate)
 }
 
+// There must be a better way to do this
 func isDirty(message string) bool {
 
 	result := false
