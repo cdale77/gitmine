@@ -6,6 +6,7 @@ import (
 	"compress/gzip"
 	"encoding/json"
 	"fmt"
+	"github.com/melvinmt/firebase"
 	"io/ioutil"
 	"net/http"
 	"os"
@@ -32,6 +33,13 @@ type Commit struct {
 func main() {
 	fullDate := time.Now().AddDate(0, 0, -1).Format("2006-01-02")
 	getData(fullDate)
+}
+
+func storeCommit() {
+	authToken := os.Getenv("FIREBASE_SECRET")
+
+	url := ""
+
 }
 
 // There must be a better way to do this
