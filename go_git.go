@@ -35,6 +35,45 @@ func main() {
 	getData(fullDate)
 }
 
+func isDirty(message string) bool {
+
+	result := false
+
+	cussWords := []string{
+		"fuck",
+		"bitch",
+		"stupid",
+		" tits",
+		"asshole",
+		"cocksucker",
+		"cunt",
+		" hell ",
+		"douche",
+		"testicle",
+		"twat",
+		"bastard",
+		"sperm",
+		"shit",
+		"dildo",
+		"wanker",
+		"prick",
+		"penis",
+		"vagina",
+		"whore"}
+
+	messageWords := strings.Split(message, " ")
+
+	for _, cussWord := range cussWords {
+		for _, word := range messageWords {
+			if word == cussWord {
+				result = true
+			}
+		}
+
+	}
+	return result
+}
+
 func parseCommit(line string) {
 	var commit Commit
 
@@ -45,7 +84,10 @@ func parseCommit(line string) {
 	}
 
 	if commit.Type == "PushEvent" && commit.Payload.Size > 0 {
-		fmt.Println(commit.Payload.Commits[0].Message)
+		//fmt.Println(commit.Payload.Commits[0].Message)
+		if isDirty(commit.Payload.Commits[0].Message) {
+			fmt.Println(commit.Payload.Commits[0].Message)
+		}
 	}
 
 }
