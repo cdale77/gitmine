@@ -30,7 +30,6 @@ type Commit struct {
 }
 
 func main() {
-
 	fullDate := time.Now().AddDate(0, 0, -1).Format("2006-01-02")
 	getData(fullDate)
 }
@@ -85,7 +84,6 @@ func parseCommit(line string) {
 	}
 
 	if commit.Type == "PushEvent" && commit.Payload.Size > 0 {
-		//fmt.Println(commit.Payload.Commits[0].Message)
 		if isDirty(commit.Payload.Commits[0].Message) {
 			fmt.Println(commit.Payload.Commits[0].Message)
 		}
