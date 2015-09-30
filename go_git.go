@@ -35,10 +35,22 @@ func main() {
 	getData(fullDate)
 }
 
-func storeCommit() {
+func storeCommit(commit Commit) bool {
 	authToken := os.Getenv("FIREBASE_SECRET")
 
 	url := os.Getenv("FIREBASE_URL")
+
+	fireBase := firebase.NewReference(url).Auth(authToken)
+
+	err := fireBase.Push(commit)
+	if err != nil {
+		fmt.Println("Firebase error")
+		fmt.Println(err)
+		return false
+	} else {
+		fmt.Println("Firebase success?")
+		return true
+	}
 
 }
 
@@ -94,7 +106,8 @@ func parseCommit(line string) {
 
 	if commit.Type == "PushEvent" && commit.Payload.Size > 0 {
 		if isDirty(commit.Payload.Commits[0].Message) {
-			fmt.Println(commit.Payload.Commits[0].Message)
+			//fmt.Println(commit.Payload.Commits[0].Message)
+			storeCommit(commit)
 		}
 	}
 
@@ -119,7 +132,8 @@ func parseFile(fName string) {
 	for {
 		line, err := fileRead.ReadString('\n')
 		if err != nil {
-			fmt.Println("Did not get a new line.")
+			fmt.Println("Error reading file.")
+			fmt.Println(err)
 			break
 		}
 
