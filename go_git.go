@@ -38,11 +38,12 @@ func main() {
 func storeCommit() {
 	authToken := os.Getenv("FIREBASE_SECRET")
 
-	url := ""
+	url := os.Getenv("FIREBASE_URL")
 
 }
 
-// There must be a better way to do this
+// There must be a better way to do this. Probably sort cussWords alpha
+// and use a lookup table.
 func isDirty(message string) bool {
 
 	result := false
@@ -51,11 +52,11 @@ func isDirty(message string) bool {
 		"fuck",
 		"bitch",
 		"stupid",
-		" tits",
+		"tits",
 		"asshole",
 		"cocksucker",
 		"cunt",
-		" hell ",
+		"hell",
 		"douche",
 		"testicle",
 		"twat",
