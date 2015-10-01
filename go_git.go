@@ -51,7 +51,6 @@ func storeCommit(commit Commit) bool {
 		fmt.Println("Firebase success?")
 		return true
 	}
-
 }
 
 // There must be a better way to do this. Probably sort cussWords alpha
@@ -106,7 +105,6 @@ func parseCommit(line string) {
 
 	if commit.Type == "PushEvent" && commit.Payload.Size > 0 {
 		if isDirty(commit.Payload.Commits[0].Message) {
-			//fmt.Println(commit.Payload.Commits[0].Message)
 			storeCommit(commit)
 		}
 	}
