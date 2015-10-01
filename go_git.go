@@ -6,7 +6,7 @@ import (
 	"compress/gzip"
 	"encoding/json"
 	"fmt"
-	"github.com/melvinmt/firebase"
+	"github.com/cdale77/go_git/Godeps/_workspace/src/github.com/melvinmt/firebase"
 	"io/ioutil"
 	"net/http"
 	"os"

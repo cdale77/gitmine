@@ -1,0 +1,10 @@
+{
+	"ImportPath": "github.com/cdale77/go_git",
+	"GoVersion": "go1.4.2",
+	"Deps": [
+		{
+			"ImportPath": "github.com/melvinmt/firebase",
+			"Rev": "fbeb099b58c63c37c63adac46d79f75eae7b38ea"
+		}
+	]
+}
