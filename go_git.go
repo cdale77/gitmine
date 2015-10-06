@@ -17,6 +17,7 @@ import (
 
 type CommitCommit struct {
 	Message string
+	Url     string
 }
 
 type CommitPayload struct {
@@ -24,10 +25,19 @@ type CommitPayload struct {
 	Commits []CommitCommit
 }
 
+type CommitActor struct {
+	Login       string
+	Gravatar_id string
+	Url         string
+	Avatar_url  string
+}
+
 type Commit struct {
-	Id      string
-	Type    string
-	Payload CommitPayload
+	Id         string
+	Type       string
+	Created_at string
+	Actor      CommitActor
+	Payload    CommitPayload
 }
 
 func main() {
@@ -36,6 +46,8 @@ func main() {
 }
 
 func storeCommit(commit Commit) bool {
+	fmt.Println("storing commit:")
+	fmt.Println(commit)
 	authToken := os.Getenv("FIREBASE_SECRET")
 
 	url := os.Getenv("FIREBASE_URL")
@@ -113,11 +125,21 @@ func parseCommit(line string) {
 
 func parseFile(fName string) {
 	// https://groups.google.com/forum/#!topic/golang-nuts/GjIkryuCyAY
+	// TODO: standardize use of file api
+	// https://stackoverflow.com/questions/1821811/how-to-read-write-from-to-file
 	fileOS, err := os.Open(fName)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Can't open %s: error: %s\n", fName, err)
 		os.Exit(1)
 	}
+
+	//https://stackoverflow.com/questions/1821811/how-to-read-write-from-to-file
+	// close fi on exit and check for its returned error
+	defer func() {
+		if err := fileOS.Close(); err != nil {
+			panic(err)
+		}
+	}()
 
 	fileGzip, err := gzip.NewReader(fileOS)
 	if err != nil {
