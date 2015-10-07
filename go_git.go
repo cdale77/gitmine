@@ -161,6 +161,8 @@ func parseFile(fName string) {
 
 		i++
 	}
+
+	os.Remove(fName)
 }
 
 func getData(fullDate string) {
