@@ -15,6 +15,13 @@ import (
 	"time"
 )
 
+type Event struct {
+	Type       string
+	Created_at string
+	Actor      CommitActor
+	Payload    CommitPayload
+}
+
 type StoredCommit struct {
 	Date    string
 	Login   string
@@ -38,21 +45,14 @@ type CommitActor struct {
 	Avatar_url string
 }
 
-type Commit struct {
-	Type       string
-	Created_at string
-	Actor      CommitActor
-	Payload    CommitPayload
-}
-
 func main() {
 	fullDate := time.Now().AddDate(0, 0, -1).Format("2006-01-02")
 	getData(fullDate)
 }
 
-func storeCommit(commit Commit, commitMessage string, commitUrl string) bool {
-	fmt.Println("storing commit:")
-	fmt.Println(commit)
+func storeCommit(event Event, commitMessage string, commitUrl string) bool {
+	fmt.Println("storing event:")
+	fmt.Println(event)
 	authToken := os.Getenv("FIREBASE_SECRET")
 
 	url := os.Getenv("FIREBASE_URL")
@@ -60,9 +60,9 @@ func storeCommit(commit Commit, commitMessage string, commitUrl string) bool {
 	fireBase := firebase.NewReference(url).Auth(authToken)
 
 	var storedCommit StoredCommit
-	storedCommit.Date = commit.Created_at
-	storedCommit.Login = commit.Actor.Login
-	storedCommit.Avatar = commit.Actor.Avatar_url
+	storedCommit.Date = event.Created_at
+	storedCommit.Login = event.Actor.Login
+	storedCommit.Avatar = event.Actor.Avatar_url
 	storedCommit.Message = commitMessage
 	storedCommit.Url = commitUrl
 
@@ -118,20 +118,20 @@ func isDirty(message string) bool {
 }
 
 func parseCommit(line string) {
-	var commit Commit
+	var event Event
 
-	jsonErr := json.Unmarshal([]byte(line), &commit)
+	jsonErr := json.Unmarshal([]byte(line), &event)
 	if jsonErr != nil {
 		fmt.Println("Could not parse json.")
 		fmt.Println(jsonErr)
 	}
 
-	if commit.Type == "PushEvent" && commit.Payload.Size > 0 {
-		// TO-DO this is only checking the first commit.
-		message := commit.Payload.Commits[0].Message
+	if event.Type == "PushEvent" && event.Payload.Size > 0 {
+		// TO-DO this is only checking the first event.
+		message := event.Payload.Commits[0].Message
 		if isDirty(message) {
-			url := commit.Payload.Commits[0].Url
-			storeCommit(commit, message, url)
+			url := event.Payload.Commits[0].Url
+			storeCommit(event, message, url)
 		}
 	}
 
