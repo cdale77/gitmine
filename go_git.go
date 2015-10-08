@@ -18,8 +18,18 @@ import (
 type Event struct {
 	Type       string
 	Created_at string
-	Actor      CommitActor
-	Payload    CommitPayload
+	Actor      EventActor
+	Payload    EventPayload
+}
+
+type EventActor struct {
+	Login      string
+	Avatar_url string
+}
+
+type EventPayload struct {
+	Size    int
+	Commits []CommitCommit
 }
 
 type StoredCommit struct {
@@ -33,16 +43,6 @@ type StoredCommit struct {
 type CommitCommit struct {
 	Message string
 	Url     string
-}
-
-type CommitPayload struct {
-	Size    int
-	Commits []CommitCommit
-}
-
-type CommitActor struct {
-	Login      string
-	Avatar_url string
 }
 
 func main() {
@@ -117,7 +117,7 @@ func isDirty(message string) bool {
 	return result
 }
 
-func parseCommit(line string) {
+func parseEvent(line string) {
 	var event Event
 
 	jsonErr := json.Unmarshal([]byte(line), &event)
@@ -171,7 +171,7 @@ func parseFile(fName string) {
 			break
 		}
 
-		parseCommit(line)
+		parseEvent(line)
 
 		i++
 	}
