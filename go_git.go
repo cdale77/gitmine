@@ -50,7 +50,7 @@ func main() {
 	getData(fullDate)
 }
 
-func storeCommit(commit Commit) bool {
+func storeCommit(commit Commit, commitMessage string, commitUrl string) bool {
 	fmt.Println("storing commit:")
 	fmt.Println(commit)
 	authToken := os.Getenv("FIREBASE_SECRET")
@@ -63,10 +63,8 @@ func storeCommit(commit Commit) bool {
 	storedCommit.Date = commit.Created_at
 	storedCommit.Login = commit.Actor.Login
 	storedCommit.Avatar = commit.Actor.Avatar_url
-	// This only stores the first commit message. Fix it so it stores one of these
-	// for every message
-	//storedCommit.Message = commit.Payload.Commits[0]
-	storedCommit.Url = commit.Payload.Commits[0].Url
+	storedCommit.Message = commitMessage
+	storedCommit.Url = commitUrl
 
 	err := fireBase.Push(storedCommit)
 	if err != nil {
@@ -115,7 +113,6 @@ func isDirty(message string) bool {
 				result = true
 			}
 		}
-
 	}
 	return result
 }
@@ -130,11 +127,11 @@ func parseCommit(line string) {
 	}
 
 	if commit.Type == "PushEvent" && commit.Payload.Size > 0 {
-		// TO-DO this is only checking the first commit. Probably build
-		// the storage struct here and pass it to the storeCommit()
-		// function
-		if isDirty(commit.Payload.Commits[0].Message) {
-			storeCommit(commit)
+		// TO-DO this is only checking the first commit.
+		message := commit.Payload.Commits[0].Message
+		if isDirty(message) {
+			url := commit.Payload.Commits[0].Url
+			storeCommit(commit, message, url)
 		}
 	}
 
