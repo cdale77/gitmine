@@ -127,14 +127,16 @@ func parseEvent(line string) {
 	}
 
 	if event.Type == "PushEvent" && event.Payload.Size > 0 {
-		// TO-DO this is only checking the first event.
-		message := event.Payload.Commits[0].Message
-		if isDirty(message) {
-			url := event.Payload.Commits[0].Url
-			storeCommit(event, message, url)
+
+		// An event can have multiple commits.
+		commits := event.Payload.Commits
+		for _, commit := range commits {
+			if isDirty(commit.Message) {
+				fmt.Println(commit.Message)
+				storeCommit(event, commit.Message, commit.Url)
+			}
 		}
 	}
-
 }
 
 func parseFile(fName string) {
