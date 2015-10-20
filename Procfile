@@ -1,1 +1,1 @@
-worker: go_git
+worker: gitmine
