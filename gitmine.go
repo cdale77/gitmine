@@ -214,7 +214,7 @@ func getData(fullDate string) {
 			handleError("Error writing response to file", fileErr)
 		}
 
-		parseFile(fname)
+		go parseFile(fname)
 
 	}
 }
