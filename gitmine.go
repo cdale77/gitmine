@@ -33,11 +33,12 @@ type EventPayload struct {
 }
 
 type StoredCommit struct {
-	Date    string
-	Login   string
-	Avatar  string
-	Message string
-	Url     string
+	SearchId string
+	Date     string
+	Login    string
+	Avatar   string
+	Message  string
+	Url      string
 }
 
 type CommitCommit struct {
@@ -46,7 +47,8 @@ type CommitCommit struct {
 }
 
 type Search struct {
-	words []string
+	Id    string
+	Words []string
 }
 
 func main() {
@@ -69,6 +71,7 @@ func storeCommit(event Event, commitMessage string, commitUrl string) bool {
 	storedCommit.Avatar = event.Actor.Avatar_url
 	storedCommit.Message = commitMessage
 	storedCommit.Url = commitUrl
+	storedCommit.SearchId = "1"
 
 	err := fireBase.Push(storedCommit)
 	if err != nil {
@@ -110,11 +113,11 @@ func isDirty(message string) bool {
 		"whore"}
 
 	var storedSearch Search
-	storedSearch.words = cussWords
+	storedSearch.Words = cussWords
 
 	messageWords := strings.Split(message, " ")
 
-	for _, searchWord := range storedSearch.words {
+	for _, searchWord := range storedSearch.Words {
 		for _, word := range messageWords {
 			if word == searchWord {
 				result = true
@@ -139,7 +142,7 @@ func parseEvent(line string) {
 		commits := event.Payload.Commits
 		for _, commit := range commits {
 			if isDirty(commit.Message) {
-				fmt.Println(commit.Message)
+				//fmt.Println(commit.Message)
 				htmlUrl := makeHtmlUrl(commit.Url)
 				storeCommit(event, commit.Message, htmlUrl)
 			}
