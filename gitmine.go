@@ -45,6 +45,10 @@ type CommitCommit struct {
 	Url     string
 }
 
+type Search struct {
+	words []string
+}
+
 func main() {
 	fullDate := time.Now().AddDate(0, 0, -1).Format("2006-01-02")
 	getData(fullDate)
@@ -105,11 +109,14 @@ func isDirty(message string) bool {
 		"vagina",
 		"whore"}
 
+	var storedSearch Search
+	storedSearch.words = cussWords
+
 	messageWords := strings.Split(message, " ")
 
-	for _, cussWord := range cussWords {
+	for _, searchWord := range storedSearch.words {
 		for _, word := range messageWords {
-			if word == cussWord {
+			if word == searchWord {
 				result = true
 			}
 		}
