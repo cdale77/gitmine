@@ -133,7 +133,8 @@ func parseEvent(line string) {
 		for _, commit := range commits {
 			if isDirty(commit.Message) {
 				fmt.Println(commit.Message)
-				storeCommit(event, commit.Message, commit.Url)
+				htmlUrl := makeHtmlUrl(commit.Url)
+				storeCommit(event, commit.Message, htmlUrl)
 			}
 		}
 	}
@@ -264,6 +265,15 @@ func makeFileName(fullDate string, i int) string {
 
 	return buffer.String()
 
+}
+
+// The data does not contain an url to make a proper html page. But we can
+// deduce it from the supplied api url (which makes json)
+func makeHtmlUrl(apiUrl string) string {
+	newUrl1 := strings.Replace(apiUrl, "api.", "", 1)
+	newUrl2 := strings.Replace(newUrl1, "repos/", "", 1)
+	newUrl3 := strings.Replace(newUrl2, "commits", "commit", 1)
+	return newUrl3
 }
 
 func handleError(message string, err error) {
