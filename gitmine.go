@@ -57,8 +57,7 @@ func main() {
 }
 
 func storeCommit(event Event, commitMessage string, commitUrl string) bool {
-	fmt.Println("storing event:")
-	fmt.Println(event)
+	fmt.Println("storing event")
 	authToken := os.Getenv("FIREBASE_SECRET")
 
 	url := os.Getenv("FIREBASE_URL")
@@ -77,6 +76,10 @@ func storeCommit(event Event, commitMessage string, commitUrl string) bool {
 	if err != nil {
 		fmt.Println("Firebase error")
 		fmt.Println(err)
+		fmt.Println("Attempting to store:")
+		fmt.Println(storedCommit)
+		fmt.Println("Firebase url:")
+		fmt.Println(url)
 		return false
 	} else {
 		fmt.Println("Firebase success")
